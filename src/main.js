@@ -4,24 +4,19 @@ class Parser {
   constructor(p1, p2) {
     this.data = readSvgFile(p1, p2)
   }
-  getStyling(nodeId) {
+  style(nodeId, obj) {
     const n = this.getNode(nodeId)
     if (!n.style) throw new Error(`Failed to get styling for node with id ${id}. No style attribute present`)
-    let styling = ""
-    for (let key in n.style) {
-      styling += `${key}: ${n.style[key]};`
-    }
-    return styling
-  }
-  setStyling(nodeId, obj) {
-    const n = this.getNode(nodeId)
-    if (!n.style) throw new Error(`Failed to set styling for node with id ${id}. No style attribute present`)
     if (obj && typeof(obj) === "object") {
       for (let key in obj) {
         this.data.svg[nodeId].style[key] = obj[key]
       }
     }
-    return this
+    let styling = ""
+    for (let key in n.style) {
+      styling += `${key}: ${n.style[key]};`
+    }
+    return styling
   }
   getNode(id) {
     if (typeof(id) !== "string") throw new Error(`${nodeId} is not a string`)
