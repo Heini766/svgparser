@@ -1,0 +1,16 @@
+{
+  "name": "svgparser",
+  "version": "1.0.0",
+  "description": "Reads and parsses svg files",
+  "keywords": [
+    "svg",
+    "parser"
+  ],
+  "license": "MIT",
+  "author": "Heinrich Ackermann",
+  "type": "module",
+  "main": "./index.js",
+  "scripts": {
+    "test": "node ./src/tests/test.js"
+  }
+}
