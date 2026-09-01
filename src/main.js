@@ -5,7 +5,29 @@ class Parser {
     this.data = readSvgFile(p1, p2)
   }
   getStyling(nodeId) {
-    
+    const n = this.getNode(nodeId)
+    if (!n.style) throw new Error(`Failed to get styling for node with id ${id}. No style attribute present`)
+    let styling = ""
+    for (let key in n.style) {
+      styling += `${key}: ${n.style[key]};`
+    }
+    return styling
+  }
+  setStyling(nodeId, obj) {
+    const n = this.getNode(nodeId)
+    if (!n.style) throw new Error(`Failed to set styling for node with id ${id}. No style attribute present`)
+    if (obj && typeof(obj) === "object") {
+      for (let key in obj) {
+        this.data.svg[nodeId].style[key] = obj[key]
+      }
+    }
+    return this
+  }
+  getNode(id) {
+    if (typeof(id) !== "string") throw new Error(`${nodeId} is not a string`)
+    const { svg } = this.data
+    if (!svg[id]) throw new Error(`Failed to find node with id ${id}`)
+    return svg[id]
   }
 }
 
@@ -40,7 +62,7 @@ function parseStyleString(styleText = '') {
   return style;
 }
 
-function svgToPathData(svgText, symbolName = 'svg') {
+function getSvgData(svgText, symbolName = 'svg') {
   const pathPattern = /<path\b[^>]*>/gi;
   const paths = {};
   let pathIndex = 0;
@@ -80,10 +102,7 @@ function svgToPathData(svgText, symbolName = 'svg') {
 
 function readSvgFile(filePath, symbolName = 'svg') {
   const svgText = fs.readFileSync(filePath, 'utf8');
-  return svgToPathData(svgText, symbolName);
+  return getSvgData(svgText, symbolName);
 }
 
-export {
-  svgToPathData,
-  readSvgFile,
-};
+export default Parser

@@ -1,3 +1,3 @@
-import { readSvgFile } from "./src/main.js"
+import Parser from "./src/main.js"
 
-export default readSvgFile
+export { Parser }
