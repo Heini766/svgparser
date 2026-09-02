@@ -37,12 +37,12 @@ class Parser {
   }
   forEachNode(f) {
     this.#loopNodes(d => {
-      const { tagName } = d
+      const { tagName, children } = d
       const clone = structuredClone(d)
       delete clone.tagName
       delete clone.children
       clone.style = this.style(d.id)
-      f({tagName, attrs: clone})
+      f({attrs: clone, tagName, children})
     })
   }
   loopChildren(nodeId, f) {
