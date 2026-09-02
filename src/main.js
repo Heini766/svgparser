@@ -54,6 +54,16 @@ class Parser {
     }
     return this
   }
+  create(page) {
+    const parents = []
+    this.forEachNode(n => {
+      const { tagName, attrs, children } = n
+      const newEl = page.make(tagName, attrs)
+      if (children) parents.push(newEl)
+    })
+    parents.forEach(el => this.loopChildren(el.id, c => el.add(page.get(c.id))))
+    return parents[0]
+  } // integrates with beaverjs
   #loopNodes(f) {
     if (typeof(f) !== "function") throw new Error(`Internal error looping through nodes: ${f} isn't a function`)
     const { svg } = this.data
