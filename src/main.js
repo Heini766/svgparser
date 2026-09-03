@@ -37,12 +37,13 @@ class Parser {
   }
   forEachNode(f) {
     this.#loopNodes(d => {
-      const { tagName, children } = d
+      const { tagName, children, innerHTML } = d
       const clone = structuredClone(d)
       delete clone.tagName
       delete clone.children
+      delete clone.innerHTML
       clone.style = this.style(d.id)
-      f({attrs: clone, tagName, children})
+      f({attrs: clone, tagName, children, innerHTML})
     })
   }
   loopChildren(nodeId, f) {
@@ -57,8 +58,9 @@ class Parser {
   create(page) {
     const parents = []
     this.forEachNode(n => {
-      const { tagName, attrs, children } = n
+      const { tagName, attrs, children, innerHTML } = n
       const newEl = page.make(tagName, attrs)
+      if (innerHTML) newEl.content(innerHTML)
       if (children) parents.push(newEl)
     })
     parents.forEach(el => this.loopChildren(el.id, c => el.add(page.get(c.id))))
@@ -129,7 +131,9 @@ function getSvgData(svgText, config, symbolName = 'svg') {
       const tagName = tag.slice(2, -1).toLowerCase();
       // Pop from stack if it matches
       if (stack.length > 0 && stack[stack.length - 1].tagName === tagName) {
-        stack.pop();
+        const node = stack.pop();
+        const innerHTML = svgText.slice(node.contentStart, match.index);
+        if (tagName === 'defs' && innerHTML) node.nodeRef.innerHTML = innerHTML;
       }
       continue;
     }
@@ -178,7 +182,12 @@ function getSvgData(svgText, config, symbolName = 'svg') {
     const isSelfClosing = tag.endsWith('/>') || ['circle', 'ellipse', 'rect', 'line', 'image', 'use', 'stop'].includes(tagName);
     
     if (!isSelfClosing) {
-      stack.push({ tagName: tagName, id: id, nodeRef: nodeAttributes });
+      stack.push({
+        tagName: tagName,
+        id: id,
+        nodeRef: nodeAttributes,
+        contentStart: match.index + tag.length,
+      });
     }
 
     elementIndex += 1;
